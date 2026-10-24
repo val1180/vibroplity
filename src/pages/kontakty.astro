@@ -1,0 +1,92 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { SITE, telHref } from '../data/site';
+
+const map = (address: string) => `https://yandex.by/maps/?text=${encodeURIComponent(`Минск, ${address}`)}`;
+---
+<Base
+  title={`Контакты и пункты выдачи — аренда виброплит в Минске | ${SITE.name}`}
+  description={`Телефон ${SITE.phoneHuman}, Telegram и три пункта выдачи виброплит в Минске: ул. Автомобилистов, 12; ул. К. Либкнехта, 54; ул. Домбровская, 10. ${SITE.hours}.`}
+  crumbs={[{ label: 'Главная', href: '/' }, { label: 'Контакты' }]}
+>
+  <section class="top">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span>/</span><span aria-current="page">Контакты</span></nav>
+      <h1>Контакты</h1>
+      <p class="sub">Звоните или пишите в Telegram: подскажем вес плиты под ваш слой и проверим, в каком пункте она есть.</p>
+
+      <div class="grid">
+        <a class="card big" href={telHref}>
+          <span class="lbl">Телефон</span>
+          <b class="num">{SITE.phoneHuman}</b>
+          <span class="hint">Нажмите, чтобы позвонить</span>
+        </a>
+        <a class="card" href={SITE.telegram} target="_blank" rel="noopener">
+          <span class="lbl">Telegram</span><b>Написать</b><span class="hint">Ответим в рабочее время</span>
+        </a>
+        <a class="card" href={`mailto:${SITE.email}`}>
+          <span class="lbl">E-mail</span><b>{SITE.email}</b><span class="hint">Для договоров и счетов</span>
+        </a>
+      </div>
+
+      <h2>Пункты выдачи</h2>
+      <p class="hours">Режим работы: <b>{SITE.hours}</b></p>
+      <div class="points">
+        {SITE.points.map((p) => (
+          <a class="point reveal" href={map(p.address)} target="_blank" rel="noopener">
+            <span class="pin" aria-hidden="true"></span>
+            <span><b>{p.address}</b>{p.metro && <span class="metro">{p.metro}</span>}</span>
+            <span class="go">На карте →</span>
+          </a>
+        ))}
+      </div>
+      <p class="note">Перед приездом позвоните: плиты 300–500 кг есть не в каждом пункте, подвезём к нужному. Тяжёлые плиты везут прицепом или нашей доставкой по Минску и области — стоимость назовёт менеджер.</p>
+    </div>
+  </section>
+
+  <section class="form-sec">
+    <div class="wrap">
+      <div class="box dark-zone">
+        <div class="zebra bar" aria-hidden="true"></div>
+        <div>
+          <div class="kicker">Заявка</div>
+          <h2>Оставьте номер — перезвоним</h2>
+          <p class="call">Расскажите, что уплотняете и какой толщины слой, — подберём плиту.</p>
+        </div>
+        <LeadForm id="contactForm" source="Страница контактов" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .top { padding-top: 52px; }
+  h1 { font-size: clamp(32px, 4.4vw, 52px); }
+  .grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; margin: 40px 0 64px; }
+  .card { display: flex; flex-direction: column; gap: 8px; padding: 26px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); transition: border-color .2s, transform .2s; }
+  .card:hover { border-color: var(--signal); transform: translateY(-3px); }
+  .lbl { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .card b { font: 800 20px var(--display); overflow-wrap: anywhere; }
+  .card.big b { font: 500 clamp(22px, 2.4vw, 30px) var(--mono); color: var(--accent); white-space: nowrap; overflow-wrap: normal; }
+  .hint { color: var(--muted); font-size: 14px; }
+  h2 { font-size: clamp(26px, 3vw, 38px); }
+  .hours { margin-top: 10px; color: var(--muted); }
+  .hours b { color: var(--text); }
+  .points { display: grid; gap: 12px; margin-top: 22px; }
+  .point { display: flex; align-items: center; gap: 18px; padding: 20px 22px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); transition: border-color .2s, opacity .7s, transform .7s; }
+  .point:hover { border-color: var(--signal); }
+  .point b { display: block; font-size: 18px; }
+  .metro { color: var(--muted); font-size: 14px; }
+  .pin { flex: none; width: 14px; height: 14px; background: var(--signal); transform: rotate(45deg); box-shadow: 0 0 0 6px rgb(var(--signal-rgb) / .15); }
+  .go { margin-left: auto; color: var(--accent); font-weight: 700; white-space: nowrap; }
+  .note { color: var(--muted); margin-top: 18px; max-width: 820px; }
+  .box { position: relative; overflow: hidden; border-radius: 26px; padding: 52px 48px 44px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; background: radial-gradient(ellipse at 0% 100%, rgba(176, 138, 90, .28), transparent 55%), var(--bg2); border: 1px solid var(--stroke); }
+  .bar { position: absolute; left: 0; right: 0; top: 0; }
+  .call { color: var(--text-2); margin-top: 14px; }
+  @media (max-width: 860px) {
+    .grid, .box { grid-template-columns: 1fr; }
+    .box { padding: 34px 22px 26px; }
+    .go { display: none; }
+  }
+</style>

@@ -2,7 +2,7 @@
 // Доставка — через серверный /send.php (токен бота и адрес CRM только на сервере), как на
 // остальных микросайтах: POST { text, hp } → { ok }.
 
-import { TASKS } from '../data/calc';
+import { TASKS } from '../data/tasks';
 
 const SITE_LABEL = 'Виброплиты.by';
 

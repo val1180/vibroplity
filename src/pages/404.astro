@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { TASK_PAGES } from '../data/pages';
+import { SITE } from '../data/site';
+---
+<Base title={`Страница не найдена | ${SITE.name}`} description="Такой страницы нет — вернитесь на главную или выберите задачу." noindex>
+  <section class="nf dark-zone">
+    <div class="wrap">
+      <p class="code num">404</p>
+      <h1>Здесь всё утрамбовано — <em>страницы нет</em></h1>
+      <p class="sub">Возможно, адрес изменился. Посмотрите плиты под вашу задачу:</p>
+      <div class="links">
+        {TASK_PAGES.map((t) => <a class="btn ghost" href={`/${t.slug}.html`}>{t.short}</a>)}
+        <a class="btn" href="/">На главную</a>
+      </div>
+    </div>
+    <div class="ground" aria-hidden="true"><span class="s"></span><span class="g"></span><span class="e"></span></div>
+  </section>
+</Base>
+
+<style>
+  .nf { position: relative; overflow: hidden; min-height: 76vh; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 64px 0 0; background: var(--bg); }
+  .code { font-size: clamp(96px, 18vw, 190px); line-height: 1; font-weight: 500; color: var(--signal); letter-spacing: -.04em; }
+  h1 { font-size: clamp(26px, 3.6vw, 42px); margin-top: 8px; }
+  .sub { margin: 14px auto 26px; }
+  .links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+  /* Слои грунта — те же цвета, что на первом экране; песок уплотнён до конца шкалы */
+  .ground { display: grid; grid-template-rows: 34px 40px 30px; margin-top: auto; }
+  .s { background: radial-gradient(circle, rgba(255, 255, 255, .18) 1px, transparent 1.5px) 0 0 / 7px 7px, linear-gradient(90deg, var(--d2), var(--d3)); }
+  .g { background: radial-gradient(circle at 30% 30%, #8d8a82 2.5px, transparent 3px) 0 0 / 14px 12px, #4e4c48; }
+  .e { background: #2f251c; }
+</style>

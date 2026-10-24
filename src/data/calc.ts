@@ -5,14 +5,8 @@
 // Не перестраховываемся: берём самую дешёвую машину, которая проходит слой за минимум раз.
 // Больше двух одинаковых машин не предлагаем (на сайте нет остатков) — дальше «через менеджера».
 
-export type Material = 'sand' | 'pgs' | 'gravel' | 'soil';
-export type Task = 'tile' | 'otmostka' | 'parking' | 'road' | 'trench';
-
-export const MATERIALS: Record<Material, string> = { sand: 'песок', pgs: 'ПГС', gravel: 'щебень', soil: 'грунт' };
-export const TASKS: Record<Task, string> = {
-  tile: 'плитка, дорожка', otmostka: 'отмостка', parking: 'площадка под авто',
-  road: 'дорога, основание', trench: 'траншея, вдоль стен',
-};
+import type { Material, Task } from './tasks';
+export { MATERIALS, TASKS, type Material, type Task } from './tasks';
 
 interface Machine {
   key: string;

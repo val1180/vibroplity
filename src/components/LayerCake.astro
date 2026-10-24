@@ -1,0 +1,40 @@
+---
+// «Пирог» основания в разрезе: слои сверху вниз, высота — по толщине, цвет — по материалу.
+// Слой, который уплотняют плитой, отмечен меткой «плита» и цветом шкалы плотности.
+export type Layer = { name: string; cm: string; kind: 'cover' | 'sand' | 'gravel' | 'geo' | 'soil'; plate?: boolean; h?: number };
+interface Props { layers: Layer[]; caption: string }
+const { layers, caption } = Astro.props;
+---
+<figure class="cake dark-zone" aria-label={caption}>
+  <div class="cap"><span>Разрез</span><span>{caption}</span></div>
+  <div class="stack">
+    {layers.map((l) => (
+      <div class={`l ${l.kind}${l.plate ? ' pl' : ''}`} style={`flex-grow:${l.h ?? 1}`}>
+        <b>{l.name}</b><span class="num">{l.cm}</span>
+        {l.plate && <em>плита</em>}
+      </div>
+    ))}
+  </div>
+  <figcaption><i></i>уплотняют виброплитой</figcaption>
+</figure>
+
+<style>
+  .cake { margin: 0; width: 100%; max-width: 380px; justify-self: end; padding: 16px; border-radius: 20px; background: rgba(27, 29, 31, .85); border: 1px solid var(--stroke); }
+  .cap { display: flex; justify-content: space-between; gap: 12px; font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .stack { display: flex; flex-direction: column; height: 300px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .l { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 14px; min-height: 30px; font-size: 13.5px; color: #f3f1ec; }
+  .l b { font-weight: 600; }
+  .l span { font-size: 12.5px; opacity: .85; white-space: nowrap; }
+  .cover { background: repeating-linear-gradient(90deg, #4a4d52 0 46px, #3b3e42 46px 48px); }
+  .sand { background: radial-gradient(circle at 20% 40%, rgba(255, 255, 255, .12) 1px, transparent 1.5px) 0 0 / 7px 7px, var(--d1); color: #1d1a15; }
+  .gravel { background: radial-gradient(circle at 30% 30%, #8d8a82 2.5px, transparent 3px) 0 0 / 13px 11px, radial-gradient(circle at 70% 70%, #6f6c66 2px, transparent 2.5px) 0 0 / 11px 13px, #4e4c48; }
+  .geo { background: repeating-linear-gradient(45deg, #2b2d30 0 3px, #34373a 3px 6px); min-height: 22px; font-size: 12px; }
+  .soil { background: radial-gradient(circle at 40% 50%, rgba(120, 92, 64, .6) 1.5px, transparent 2px) 0 0 / 9px 9px, #2f251c; }
+  .pl { box-shadow: inset 4px 0 0 var(--signal); }
+  .pl.sand { background: radial-gradient(circle at 20% 40%, rgba(255, 255, 255, .15) 1px, transparent 1.5px) 0 0 / 6px 6px, var(--d2); }
+  em { position: absolute; right: 8px; top: 50%; translate: 0 -50%; font: 500 10px var(--mono); font-style: normal; text-transform: uppercase; letter-spacing: .08em; padding: 3px 6px; border-radius: 5px; background: var(--signal); color: var(--on-signal); }
+  .pl span { margin-right: 52px; }
+  figcaption { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  figcaption i { width: 14px; height: 10px; border-left: 4px solid var(--signal); background: var(--d2); border-radius: 2px; }
+  @media (max-width: 980px) { .cake { justify-self: start; max-width: 520px; } .stack { height: 260px; } }
+</style>

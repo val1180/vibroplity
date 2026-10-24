@@ -103,6 +103,13 @@ const { task = 'tile', material = 'sand', thickness = 15, area = 40, title = 'К
       btn.dataset.task = task;
       btn.dataset.calc = `${TASKS[task]}, ${MATERIALS[material]} ${thickness} см, ${area} м² → ${res.layers}×${res.layerCm} см, ${res.passes[0]}–${res.passes[1]} прох., ≈${num(res.hours)} ч, ${res.days} сут.`;
     };
+    // Предустановка со страниц задач: /?task=otmostka&material=pgs&t=25#calc
+    const q = new URLSearchParams(location.search);
+    for (const name of ['task', 'material']) {
+      const el = form.querySelector<HTMLInputElement>(`input[name="${name}"][value="${q.get(name)}"]`);
+      if (el) el.checked = true;
+    }
+    if (Number(q.get('t')) >= 5) th.value = String(Math.min(80, Number(q.get('t'))));
     range.addEventListener('input', () => { areaN.value = range.value; update(); });
     areaN.addEventListener('input', () => { range.value = areaN.value; update(); });
     form.addEventListener('input', (e) => { if (e.target !== range && e.target !== areaN) update(); });

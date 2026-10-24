@@ -3,9 +3,9 @@ import PlateArt from './PlateArt.astro';
 import { PLATES, KIND_LABEL, type Group } from '../data/plates';
 import { SITE } from '../data/site';
 
-interface Props { group?: Group; title?: string; sub?: string }
-const { group, title = 'Виброплиты в наличии', sub = 'Цена — за сутки аренды. Карточки — по весу: чем тяжелее плита, тем толще слой она уплотняет за раз.' } = Astro.props;
-const list = group ? PLATES.filter((p) => p.group === group) : PLATES;
+interface Props { group?: Group; ids?: string[]; title?: string; sub?: string }
+const { group, ids, title = 'Виброплиты в наличии', sub = 'Цена — за сутки аренды. Карточки — по весу: чем тяжелее плита, тем толще слой она уплотняет за раз.' } = Astro.props;
+const list = ids ? PLATES.filter((p) => ids.includes(p.id)) : group ? PLATES.filter((p) => p.group === group) : PLATES;
 const products = list.map((p) => ({
   '@context': 'https://schema.org', '@type': 'Product',
   name: `${p.title} — ${p.models.join(', ')}`,

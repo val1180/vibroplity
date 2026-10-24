@@ -1,0 +1,191 @@
+---
+// Шаблон страниц задач и классов веса: первый экран с разрезом или шкалой веса, статья с
+// карточкой «что взять», каталог нужных моделей, ошибки, вопросы, заявка.
+// Тексты — в src/data/landings.ts.
+import Base from '../layouts/Base.astro';
+import LayerCake from './LayerCake.astro';
+import Catalog from './Catalog.astro';
+import Faq from './Faq.astro';
+import LeadSection from './LeadSection.astro';
+import { TASK_PAGES, CLASS_PAGES } from '../data/pages';
+import type { Landing } from '../data/landings';
+
+interface Props { page: Landing }
+const { page: p } = Astro.props;
+const all = [...TASK_PAGES, ...CLASS_PAGES];
+const me = all.find((x) => x.slug === p.slug)!;
+const crumbs = [{ label: 'Главная', href: '/' }, { label: me.title }];
+const calcHref = `/?task=${p.calc.task}&material=${p.calc.material}&t=${p.calc.t}#calc`;
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: p.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+const related = all.filter((x) => x.slug !== p.slug);
+// Шкала веса для страниц классов: та же, что на главной (корень из веса)
+const pos = (w: number) => ((Math.sqrt(w) - Math.sqrt(50)) / (Math.sqrt(520) - Math.sqrt(50))) * 100;
+---
+<Base title={p.title} description={p.description} crumbs={crumbs} jsonLd={[faqLd]}>
+  <section class="ph dark-zone">
+    <div class="wrap ph-grid">
+      <div>
+        <nav class="crumbs" aria-label="Хлебные крошки">
+          <a href="/">Главная</a><span>/</span><span aria-current="page">{me.title}</span>
+        </nav>
+        <h1>{p.h1} <em>{p.hot}</em></h1>
+        <p class="lead">{p.lead}</p>
+        <div class="cta">
+          <a class="btn" href="#catalog">Выбрать плиту</a>
+          <a class="btn ghost" href={calcHref}>Рассчитать в калькуляторе →</a>
+        </div>
+        <div class="chips">{p.chips.map((c) => <span class="chip"><span set:html={c} /></span>)}</div>
+      </div>
+      {p.cake ? <LayerCake layers={p.cake.layers} caption={p.cake.caption} /> : p.range && (
+        <div class="range" aria-label={`Класс веса ${p.range.label}`}>
+          <div class="cap"><span>Класс веса</span><span class="num">{p.range.label}</span></div>
+          <div class="bar"><span style={`left:${pos(p.range.from)}%;width:${pos(p.range.to) - pos(p.range.from)}%`}></span></div>
+          <div class="ticks num"><span>60</span><span>160</span><span>300</span><span>500 кг</span></div>
+          <dl>
+            {p.range.facts.map(([k, v]) => <div><dt>{k}</dt><dd class="num">{v}</dd></div>)}
+          </dl>
+        </div>
+      )}
+    </div>
+    <div class="zebra edge" aria-hidden="true"></div>
+  </section>
+
+  <section class="art">
+    <div class="wrap art-grid">
+      <div class="prose">
+        {p.sections.map((s) => (
+          <div class="block reveal">
+            <div class="kicker">{s.kicker}</div>
+            <h2>{s.h2}</h2>
+            <div class="body" set:html={s.body} />
+            {s.table && (
+              <div class="tbl"><table>
+                <thead><tr>{s.table.head.map((h) => <th>{h}</th>)}</tr></thead>
+                <tbody>{s.table.rows.map((r) => <tr>{r.map((c) => <td set:html={c} />)}</tr>)}</tbody>
+              </table></div>
+            )}
+          </div>
+        ))}
+      </div>
+      <aside class="pick">
+        <div class="pick-card">
+          <div class="kicker">Коротко</div>
+          <h3>{p.pick.title}</h3>
+          <dl>{p.pick.rows.map(([k, v]) => <div><dt>{k}</dt><dd set:html={v} /></div>)}</dl>
+          <button class="btn" type="button" data-lead data-task={p.calc.task} data-model={p.pick.model}>Забронировать</button>
+          <a class="calc-link" href={calcHref}>Пересчитать под свою площадь →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Catalog ids={p.ids} title={p.catalogTitle} sub="Цена — за сутки аренды. Все модели в наличии; в какой пункт выдачи подвезти — уточним при звонке." />
+
+  <section class="mist">
+    <div class="wrap">
+      <div class="kicker reveal">Ошибки</div>
+      <h2 class="reveal">{p.mistakesTitle}</h2>
+      <div class="m-grid">
+        {p.mistakes.map((m, i) => (
+          <article class="reveal"><span class="n num">{String(i + 1).padStart(2, '0')}</span><h3>{m.t}</h3><p>{m.p}</p></article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="fq">
+    <div class="wrap two">
+      <Faq items={p.faq} />
+      <aside class="links reveal">
+        <h3>Ещё по теме</h3>
+        {related.map((t) => <a href={`/${t.slug}.html`}>{t.title}<span>→</span></a>)}
+        <a href="/#rammers">Вибротрамбовки для траншей<span>→</span></a>
+      </aside>
+    </div>
+  </section>
+
+  <LeadSection task={p.calc.task} title={p.leadTitle} />
+</Base>
+
+<style>
+  .ph { position: relative; overflow: hidden; padding: 0; background:
+    radial-gradient(ellipse 55% 70% at 90% 0%, rgb(var(--signal-rgb) / .1), transparent 60%),
+    linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px) 0 0 / 100% 32px,
+    linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px) 0 0 / 32px 100%, var(--bg); }
+  .ph-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 44px; align-items: center; padding: 36px 20px 54px; }
+  h1 { font-size: clamp(30px, 3.6vw, 50px); max-width: 720px; }
+  .lead { font-size: 17px; color: var(--text-2); max-width: 620px; margin: 16px 0 22px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+  .edge { position: absolute; left: 0; right: 0; bottom: 0; }
+
+  .range { justify-self: end; width: 100%; max-width: 380px; padding: 18px; border-radius: 20px; background: rgba(27, 29, 31, .85); border: 1px solid var(--stroke); }
+  .cap { display: flex; justify-content: space-between; font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .cap .num { color: var(--signal); font-size: 15px; letter-spacing: 0; }
+  .bar { position: relative; height: 14px; margin-top: 18px; border-radius: 7px; background: var(--density); opacity: .45; }
+  .bar span { position: absolute; top: -5px; bottom: -5px; border-radius: 8px; border: 2px solid var(--text); background: rgb(var(--signal-rgb) / .35); }
+  .range .bar { opacity: 1; background: linear-gradient(90deg, rgba(138, 106, 74, .45), rgb(var(--signal-rgb) / .45)); }
+  .ticks { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+  .range dl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0 0; }
+  .range dl div { padding: 10px; border-radius: 10px; background: var(--glass); border: 1px solid var(--line); }
+  .range dt { font-size: 11.5px; color: var(--muted); }
+  .range dd { margin: 0; font-size: 15px; font-weight: 500; }
+
+  .art-grid { display: grid; grid-template-columns: 1fr 340px; gap: 56px; align-items: start; }
+  .prose { display: grid; grid-template-columns: minmax(0, 1fr); gap: 52px; min-width: 0; } /* иначе таблица распирает колонку на телефоне */
+  .ph-grid > *, .fq .two > * { min-width: 0; }
+  .block h2 { font-size: clamp(24px, 2.6vw, 34px); margin-bottom: 14px; }
+  .body :global(p) { color: var(--text-2); margin-top: 12px; max-width: 720px; }
+  .body :global(ol), .body :global(ul) { color: var(--text-2); margin-top: 12px; padding-left: 22px; display: grid; gap: 8px; max-width: 720px; }
+  .body :global(li::marker) { color: var(--accent); font-family: var(--mono); }
+  .body :global(b) { color: var(--text); }
+  .body :global(a) { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .tbl { margin-top: 18px; overflow-x: auto; border-radius: 14px; border: 1px solid var(--line); }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 520px; }
+  th { text-align: left; font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; background: var(--card); }
+  td { padding: 12px 14px; border-top: 1px solid var(--line); color: var(--text-2); vertical-align: top; }
+  td:first-child { color: var(--text); font-weight: 600; }
+  td :global(b) { color: var(--accent); font-weight: 600; }
+
+  .pick { position: sticky; top: 90px; }
+  .pick-card { padding: 22px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); box-shadow: inset 0 4px 0 var(--signal); }
+  .pick-card h3 { font-size: 20px; }
+  .pick-card dl { margin: 14px 0 18px; display: grid; gap: 0; }
+  .pick-card dl div { display: grid; gap: 2px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .pick-card dt { font-size: 12px; color: var(--muted); }
+  .pick-card dd { margin: 0; font-weight: 600; font-size: 14.5px; }
+  .pick-card .btn { width: 100%; }
+  .calc-link { display: block; margin-top: 12px; text-align: center; font-size: 14px; color: var(--accent); font-weight: 600; }
+
+  .mist { background: var(--bg2); }
+  .m-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 30px; }
+  .m-grid article { padding: 22px 20px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); }
+  .m-grid .n { display: block; color: var(--bad); font-size: 14px; margin-bottom: 10px; }
+  .m-grid h3 { font-size: 18px; margin-bottom: 8px; }
+  .m-grid p { color: var(--muted); font-size: 14.5px; }
+
+  .fq .two { display: grid; grid-template-columns: 1.5fr 1fr; gap: 56px; align-items: start; }
+  .links { position: sticky; top: 90px; padding: 24px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); }
+  .links h3 { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .links a { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); font-weight: 600; }
+  .links h3 + a { border-top: 0; }
+  .links a span { color: var(--accent); }
+  .links a:hover { color: var(--accent); }
+
+  @media (max-width: 980px) {
+    .ph-grid, .art-grid, .fq .two { grid-template-columns: 1fr; gap: 30px; }
+    .ph-grid { padding: 26px 20px 44px; }
+    .range { justify-self: start; max-width: 520px; }
+    .pick, .links { position: static; }
+    .m-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .lead { font-size: 16px; }
+    .cta .btn { flex: 1 1 100%; }
+    .m-grid { grid-template-columns: 1fr; }
+    .chips .chip { font-size: 13px; padding: 7px 10px; }
+  }
+</style>
