@@ -1,0 +1,22 @@
+{
+  "name": "vibroplity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Виброплиты.by — аренда виброплит в Минске (Astro)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "bash deploy_server.sh"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/exo-2": "^5.3.0",
+    "@fontsource/roboto-mono": "^5.3.0",
+    "astro": "7.3.8"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

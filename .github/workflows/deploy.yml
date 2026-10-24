@@ -1,0 +1,40 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: send.php — синтаксис и тест с заглушками CRM/Telegram
+        run: php -l public/send.php && ./tests/send_php_test.sh
+
+      # Деплой — только из main и только если задан секрет SITES_SSH_KEY (как на trambovka).
+      - name: Deploy to sites-legacy (если задан SITES_SSH_KEY)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SITES_SSH_KEY: ${{ secrets.SITES_SSH_KEY }}
+        run: |
+          if [ -z "$SITES_SSH_KEY" ]; then
+            echo "::notice::SITES_SSH_KEY не задан — деплой вручную: ./deploy_server.sh"
+            exit 0
+          fi
+          mkdir -p ~/.ssh && echo "$SITES_SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 185.251.38.105 >> ~/.ssh/known_hosts
+          rsync -az --delete --exclude node_modules --exclude dist --exclude .astro --exclude .git --exclude public/tg_config.php ./ root@185.251.38.105:/srv/sites/vibroplity/src/
+          ssh root@185.251.38.105 /srv/sites/build.sh vibroplity
