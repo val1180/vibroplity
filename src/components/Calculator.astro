@@ -11,7 +11,7 @@ const { task = 'tile', material = 'sand', thickness = 15, area = 40, title = 'К
     <p class="sub reveal">Площадь, материал и толщина слоя — и сразу видно, какая плита справится, сколько проходов и сколько времени займёт. Это ориентир: точнее подскажет менеджер.</p>
 
     <div class="calc dark-zone reveal" data-calc>
-      <form class="in" onsubmit="return false">
+      <form class="inputs" onsubmit="return false">
         <fieldset>
           <legend>Задача</legend>
           <div class="seg seg5">
@@ -112,7 +112,7 @@ const { task = 'tile', material = 'sand', thickness = 15, area = 40, title = 'К
 
 <style>
   .calc { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 24px; overflow: hidden; border: 1px solid var(--stroke); background: var(--bg2); }
-  .in { padding: 30px; display: grid; gap: 22px; align-content: start; border-right: 1px solid var(--line); }
+  .inputs { padding: 30px; display: grid; gap: 22px; align-content: start; border-right: 1px solid var(--line); }
   fieldset { border: 0; padding: 0; min-width: 0; }
   legend, .rng label { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding: 0; }
   .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
@@ -150,7 +150,7 @@ const { task = 'tile', material = 'sand', thickness = 15, area = 40, title = 'К
   .out .btn { margin-top: auto; }
   @media (max-width: 980px) {
     .calc { grid-template-columns: 1fr; }
-    .in { border-right: 0; border-bottom: 1px solid var(--line); padding: 22px 18px; }
+    .inputs { border-right: 0; border-bottom: 1px solid var(--line); padding: 22px 18px; }
     .out { padding: 22px 18px; }
   }
   @media (max-width: 560px) {

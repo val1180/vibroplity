@@ -17,7 +17,7 @@ if (hero && cv) {
   // Шкала плотности: рыхлый → уплотнён (как --d0…--d3), плюс цвета щебня и грунта
   // Цвета — из CSS (--d0…--d3, --signal): акцент меняется в одном месте, global.css
   let SAND: number[][] = [];
-  let SIG = '#ffd000';
+  let SIG = '#e8a838';
   const css = (v: string) => {
     ctx.fillStyle = getComputedStyle(hero).getPropertyValue(v).trim() || '#000';
     const h = ctx.fillStyle as string; // браузер приводит любой цвет к #rrggbb
