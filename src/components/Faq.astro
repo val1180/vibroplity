@@ -1,0 +1,24 @@
+---
+interface Props { items: { q: string; a: string }[]; title?: string }
+const { items, title = 'Частые вопросы' } = Astro.props;
+---
+<div class="faq">
+  <div class="kicker reveal">Вопросы</div>
+  <h2 class="reveal">{title}</h2>
+  <div class="list">
+    {items.map((it, i) => (
+      <details class="reveal" open={i === 0}><summary>{it.q}</summary><p>{it.a}</p></details>
+    ))}
+  </div>
+</div>
+
+<style>
+  h2 { font-size: clamp(26px, 3vw, 38px); }
+  .list { margin-top: 16px; }
+  details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+  summary { cursor: pointer; font-weight: 700; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; font: 500 22px var(--mono); color: var(--accent); line-height: 1; transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  p { color: var(--muted); margin-top: 10px; max-width: 640px; }
+</style>

@@ -1,0 +1,55 @@
+---
+import PlateArt from './PlateArt.astro';
+import { RAMMERS } from '../data/plates';
+---
+<section id="rammers" class="rm">
+  <div class="wrap grid">
+    <div>
+      <div class="kicker reveal">Вибротрамбовки</div>
+      <h2 class="reveal">Где плита не помещается — <em>вибронога</em></h2>
+      <p class="sub reveal">Узкая траншея под трубу или кабель, приямок, засыпка пазух фундамента, полоса вдоль стены или забора. Башмак шириной около 30 см бьёт часто и сильно — хорошо берёт и песок, и глинистый грунт, с которым плита справляется хуже.</p>
+      <ul class="facts reveal">
+        <li>Засыпайте траншею слоями по 20–30 см и проходите каждый слой.</li>
+        <li>Первые 15–20 см над трубой — вручную или очень аккуратно: трубу не трамбуют.</li>
+        <li>Рядом с плиткой, бордюром или гидроизоляцией — с защитным ковриком.</li>
+      </ul>
+    </div>
+    <div class="cards">
+      {RAMMERS.map((r) => (
+        <article class="card reveal">
+          <div class="pic dark-zone"><PlateArt id={r.id} kind="rammer" alt={r.title} /></div>
+          <div class="body">
+            <h3>{r.title}</h3>
+            <p class="models">{r.models.join(' · ')}</p>
+            <p class="use">{r.use}</p>
+            <div class="price"><b class="num">{r.price}</b><span>руб. / сутки</span><em>в наличии</em></div>
+            <button class="btn" type="button" data-lead data-task="trench" data-model={`${r.title} — ${r.price} руб./сутки`}>Забронировать</button>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .rm { background: var(--bg2); }
+  .grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; align-items: center; }
+  .facts { margin-top: 22px; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--text-2); }
+  .facts li { padding-left: 22px; position: relative; }
+  .facts li::before { content: ''; position: absolute; left: 0; top: .55em; width: 10px; height: 4px; background: var(--zebra); }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; }
+  .pic { position: relative; aspect-ratio: 4 / 3; background: linear-gradient(0deg, rgba(138, 106, 74, .35), transparent 34%), #17191b; }
+  .pic :global(.plate-art) { position: absolute; inset: 8% 14% 6%; width: 72%; height: 86%; object-fit: contain; }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+  h3 { font-size: 18px; }
+  .models { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .use { color: var(--text-2); font-size: 14px; margin: 10px 0 14px; }
+  .price { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding: 10px 12px; border-radius: 10px; background: var(--accent-soft); }
+  .price b { font-size: 24px; font-weight: 500; }
+  .price span { font-size: 13px; color: var(--muted); }
+  .price em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 700; color: var(--ok); }
+  .body .btn { margin-top: 12px; padding: 12px; font-size: 14px; }
+  @media (max-width: 980px) { .grid { grid-template-columns: 1fr; gap: 28px; } }
+  @media (max-width: 560px) { .cards { grid-template-columns: 1fr; } }
+</style>

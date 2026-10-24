@@ -1,0 +1,49 @@
+---
+import { TASKS, type Task } from '../data/calc';
+
+interface Props {
+  id: string;
+  /** Откуда заявка — попадает в текст сообщения менеджеру */
+  source: string;
+  task?: Task;
+  button?: string;
+}
+const { id, source, task, button = 'Забронировать' } = Astro.props;
+---
+<form class="lead-form" id={id} data-lead-form data-source={source} novalidate>
+  <label class="sr-only" for={`${id}-phone`}>Телефон</label>
+  <input class="input" id={`${id}-phone`} name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Телефон *" required />
+  <label class="sr-only" for={`${id}-name`}>Имя</label>
+  <input class="input" id={`${id}-name`} name="name" autocomplete="given-name" placeholder="Имя" />
+  <label class="sr-only" for={`${id}-task`}>Задача</label>
+  <select class="input" id={`${id}-task`} name="task">
+    <option value="">Задача: подберите плиту за меня</option>
+    {Object.entries(TASKS).map(([k, label]) => <option value={k} selected={task === k}>{label[0].toUpperCase() + label.slice(1)}</option>)}
+  </select>
+  <div class="row">
+    <label class="sr-only" for={`${id}-area`}>Площадь</label>
+    <input class="input" id={`${id}-area`} name="area" inputmode="numeric" placeholder="Площадь, м²" />
+    <label class="sr-only" for={`${id}-date`}>Когда нужна</label>
+    <input class="input" id={`${id}-date`} name="date" placeholder="Когда нужна" />
+  </div>
+  <input type="hidden" name="model" />
+  <input type="hidden" name="calc" />
+  <div class="hp" aria-hidden="true"><input name="website" tabindex="-1" autocomplete="off" /></div>
+  <button class="btn" type="submit">{button}</button>
+  <p class="msg" role="status" aria-live="polite"></p>
+  <small>Нажимая кнопку, вы соглашаетесь с <a href="/privacy.html">политикой обработки персональных данных</a>.</small>
+</form>
+
+<style>
+  .lead-form { display: grid; gap: 12px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .lead-form .btn { padding: 17px; font-size: 16px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .msg:empty { display: none; }
+  .msg { font-weight: 700; }
+  .msg.ok { color: var(--ok); }
+  .msg.err { color: var(--bad); }
+  small { color: var(--muted); font-size: 12px; }
+  small a { text-decoration: underline; }
+  .input.bad { border-color: var(--bad); }
+</style>

@@ -1,0 +1,89 @@
+---
+import PlateArt from './PlateArt.astro';
+import { PLATES, KIND_LABEL, type Group } from '../data/plates';
+import { SITE } from '../data/site';
+
+interface Props { group?: Group; title?: string; sub?: string }
+const { group, title = 'Виброплиты в наличии', sub = 'Цена — за сутки аренды. Карточки — по весу: чем тяжелее плита, тем толще слой она уплотняет за раз.' } = Astro.props;
+const list = group ? PLATES.filter((p) => p.group === group) : PLATES;
+const products = list.map((p) => ({
+  '@context': 'https://schema.org', '@type': 'Product',
+  name: `${p.title} — ${p.models.join(', ')}`,
+  description: p.use,
+  category: 'Аренда виброплит',
+  offers: {
+    '@type': 'Offer', price: p.priceFrom, priceCurrency: 'BYN', availability: 'https://schema.org/InStock',
+    url: `${SITE.url}/#catalog`,
+    priceSpecification: { '@type': 'UnitPriceSpecification', price: p.priceFrom, priceCurrency: 'BYN', unitText: 'сутки' },
+  },
+}));
+---
+<section id="catalog">
+  <div class="wrap">
+    <div class="kicker reveal">Модели и цены</div>
+    <h2 class="reveal">{title}</h2>
+    <p class="sub reveal">{sub}</p>
+    <div class="grid">
+      {list.map((p) => (
+        <article class="card reveal" data-group={p.group}>
+          <div class="pic dark-zone">
+            <span class="tag">{KIND_LABEL[p.kind]}</span>
+            <span class="w num">{p.weight}</span>
+            <PlateArt id={p.id} kind={p.kind} alt={`${p.title}: ${p.models.join(', ')}`} />
+          </div>
+          <div class="body">
+            <h3>{p.title}</h3>
+            <p class="models">{p.models.join(' · ')}</p>
+            {p.depth ? (
+              <dl class="specs">
+                <div><dt>Уплотняет</dt><dd class="num">{p.depth}</dd></div>
+                <div><dt>Плита</dt><dd class="num">{p.plate}</dd></div>
+                <div><dt>За час</dt><dd class="num">{p.perf}</dd></div>
+                <div><dt>Двигатель</dt><dd class="num">{p.power}</dd></div>
+              </dl>
+            ) : <p class="nospec">Вес и глубину уплотнения назовёт менеджер</p>}
+            <p class="use">{p.use}</p>
+            <div class="price"><b class="num">{p.price}</b><span>руб. / сутки</span><em>в наличии</em></div>
+            <button class="btn" type="button" data-lead data-model={`${p.title} (${p.models.join(', ')}) — ${p.price} руб./сутки`}>Забронировать</button>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(products)} />
+</section>
+
+<style>
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; display: flex; flex-direction: column; transition: border-color .2s, transform .25s, opacity .7s; }
+  .card:hover { border-color: color-mix(in srgb, var(--signal) 50%, transparent); transform: translateY(-3px); }
+  .pic { position: relative; aspect-ratio: 16 / 10; display: grid; place-items: center; background:
+    linear-gradient(0deg, rgba(138, 106, 74, .35), transparent 34%),
+    radial-gradient(circle at 50% 60%, rgb(var(--signal-rgb) / .1), transparent 62%), #17191b; }
+  .pic::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 18%; background: repeating-linear-gradient(90deg, rgba(217, 194, 122, .14) 0 2px, transparent 2px 7px); }
+  .pic :global(.plate-art) { position: absolute; inset: 8% 14% 9%; width: 72%; height: 83%; object-fit: contain; filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .55)); transition: transform .35s; z-index: 1; }
+  .card:hover .pic :global(.plate-art) { transform: translateY(-3px) rotate(-1.5deg); }
+  .tag { position: absolute; z-index: 2; left: 12px; top: 12px; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--signal); background: rgba(0, 0, 0, .5); padding: 5px 8px; border-radius: 6px; }
+  .w { position: absolute; z-index: 2; right: 12px; top: 10px; font-size: 20px; font-weight: 500; color: var(--text); }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+  h3 { font-size: 19px; }
+  .models { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 14px 0 0; }
+  .specs div { padding: 7px 9px; border-radius: 9px; background: var(--glass); }
+  dt { font-size: 11px; color: var(--muted); }
+  dd { margin: 0; font-size: 13.5px; font-weight: 500; }
+  .nospec { margin-top: 14px; padding: 10px; border-radius: 9px; background: var(--glass); color: var(--muted); font-size: 13px; }
+  .use { color: var(--text-2); font-size: 14px; margin: 12px 0 14px; }
+  .price { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding: 10px 12px; border-radius: 10px; background: var(--accent-soft); }
+  .price b { font-size: 26px; font-weight: 500; }
+  .price span { font-size: 13px; color: var(--muted); }
+  .price em { margin-left: auto; font-style: normal; font-size: 12px; font-weight: 700; color: var(--ok); }
+  .body .btn { margin-top: 12px; padding: 12px; font-size: 14px; width: 100%; }
+  @media (max-width: 980px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  /* Телефон: лента с прокруткой вбок вместо длинного столбца карточек */
+  @media (max-width: 560px) {
+    .grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin: 22px -20px 0; padding: 0 20px 10px; scrollbar-width: none; }
+    .grid::-webkit-scrollbar { display: none; }
+    .card { flex: 0 0 82%; scroll-snap-align: start; }
+  }
+</style>

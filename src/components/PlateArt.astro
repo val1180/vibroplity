@@ -1,0 +1,38 @@
+---
+// Фото машины из src/assets/plates/<id>.webp. Нет файла — рисуем силуэт (заглушка).
+// Чтобы добавить фото: положить <id>.webp (фон прозрачный, ~600 px) — подхватится само.
+import type { Kind } from '../data/plates';
+
+interface Props { id: string; kind: Kind; alt: string; class?: string; eager?: boolean }
+const { id, kind, alt, class: cls = '', eager = false } = Astro.props;
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/plates/*.webp', { eager: true });
+const img = files[`../assets/plates/${id}.webp`]?.default;
+---
+{img ? (
+  <img class={`plate-art ${cls}`} src={img.src} width={img.width} height={img.height} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+) : (
+  <svg class={`plate-art ph ${cls}`} viewBox="0 0 200 160" role="img" aria-label={`${alt} (фото скоро)`}>
+    {kind === 'rammer' ? (
+      <g>
+        <rect x="78" y="128" width="44" height="12" rx="2" fill="#2a2c2e" />
+        <path d="M84 128 L90 84 H110 L116 128 Z" fill="#3a3d40" />
+        <rect x="76" y="48" width="48" height="38" rx="6" style="fill:var(--signal)" />
+        <rect x="84" y="56" width="22" height="16" rx="3" fill="#1d1f21" />
+        <path d="M70 60 Q60 30 92 24 H132" stroke="#1d1f21" stroke-width="6" fill="none" stroke-linecap="round" />
+      </g>
+    ) : (
+      <g>
+        <rect x="34" y="124" width={kind === 'reverse' ? 136 : 120} height="12" rx="2" fill="#2a2c2e" />
+        <path d={kind === 'reverse' ? 'M40 124 L56 82 H150 L166 124 Z' : 'M40 124 L52 98 H140 L150 124 Z'} style="fill:var(--signal)" />
+        <rect x={kind === 'reverse' ? 70 : 64} y={kind === 'reverse' ? 54 : 70} width="54" height="30" rx="4" fill="#1d1f21" />
+        <rect x={kind === 'reverse' ? 76 : 70} y={kind === 'reverse' ? 44 : 60} width="30" height="11" rx="3" fill="#c9c4b8" />
+        <path d={kind === 'reverse' ? 'M150 84 L170 36 M160 30 L182 40' : 'M48 104 L22 50 M12 46 L32 54'} stroke="#1d1f21" stroke-width="6" fill="none" stroke-linecap="round" />
+      </g>
+    )}
+    <text x="100" y="154" text-anchor="middle">фото скоро</text>
+  </svg>
+)}
+
+<style>
+  .ph text { font: 500 10px var(--mono); fill: #7f7b72; letter-spacing: .08em; }
+</style>

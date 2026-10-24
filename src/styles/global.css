@@ -1,0 +1,131 @@
+/* Шрифты — только кириллица и латиница (в латинице — цифры) */
+@import '@fontsource/exo-2/cyrillic-700.css';
+@import '@fontsource/exo-2/latin-700.css';
+@import '@fontsource/exo-2/cyrillic-800.css';
+@import '@fontsource/exo-2/latin-800.css';
+@import '@fontsource/exo-2/cyrillic-800-italic.css';
+@import '@fontsource/exo-2/latin-800-italic.css';
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource/roboto-mono/cyrillic-500.css';
+@import '@fontsource/roboto-mono/latin-500.css';
+
+:root {
+  /* Шкала плотности грунта: рыхлый → средний → плотный → уплотнён. Сквозной приём сайта:
+     ею окрашены слои на первом экране, плотномер, калькулятор, шкала «вес ↔ задача». */
+  /* Акцент сайта — ОДНО место: --signal-rgb (и --d2 рядом с ним). Остальное считается от них. */
+  --signal-rgb: 255 208 0;
+  --signal: rgb(var(--signal-rgb));
+  --d0: #8a6a4a; --d1: #b08a5a; --d2: #d9c27a; --d3: var(--signal);
+  --density: linear-gradient(90deg, var(--d0), var(--d1) 38%, var(--d2) 72%, var(--d3));
+  /* Сигнальный жёлтый строительной техники и чёрный текст на нём — в обеих темах */
+  --on-signal: #121314; --tar: #121314;
+  --zebra: repeating-linear-gradient(-45deg, var(--signal) 0 9px, var(--tar) 9px 18px);
+
+  --r: 18px;
+  --display: 'Exo 2', 'Inter Variable', system-ui, sans-serif;
+  --body: 'Inter Variable', system-ui, sans-serif;
+  --mono: 'Roboto Mono', ui-monospace, monospace;
+}
+
+/* Тёмная тема (асфальт) — по умолчанию. .dark-zone — блоки «прибора» (первый экран, калькулятор,
+   формы заявки, картинки каталога, 404): остаются тёмными и в светлой теме. */
+:root, .dark-zone {
+  --bg: #121314; --bg2: #17191b; --card: #1b1d1f; --card-2: #222528;
+  --line: rgba(255, 255, 255, .08); --stroke: rgba(255, 255, 255, .15); --stroke-2: rgba(255, 255, 255, .24);
+  --text: #f3f1ec; --text-2: #d6d2c8; --muted: #9b978d;
+  --glass: rgba(255, 255, 255, .04); --glass-2: rgba(255, 255, 255, .07);
+  --field-bg: rgba(0, 0, 0, .3); --placeholder: #7f7b72;
+  --header-bg: rgba(18, 19, 20, .78);
+  --accent: var(--signal); --accent-soft: rgb(var(--signal-rgb) / .14);
+  --ok: #8fdc8a; --bad: #ff7a6b;
+  --dens-text: var(--d2);
+  color-scheme: dark;
+}
+.dark-zone { color: var(--text); }
+
+/* Светлая тема (песок) — по настройке устройства. Акценты темнее, кнопки остаются жёлтыми. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #efe9df; --bg2: #e7e0d3; --card: #faf7f1; --card-2: #f3eee5;
+    --line: rgba(40, 30, 15, .1); --stroke: rgba(40, 30, 15, .16); --stroke-2: rgba(40, 30, 15, .28);
+    --text: #1d1a15; --text-2: #3d372d; --muted: #6c6457;
+    --glass: rgba(40, 30, 15, .035); --glass-2: rgba(40, 30, 15, .06);
+    --field-bg: #ffffff; --placeholder: #8e8676;
+    --header-bg: rgba(239, 233, 223, .86);
+    --accent: #8a6400; --accent-soft: rgba(201, 150, 0, .16);
+    --ok: #2f7d32; --bad: #c0392b;
+    --dens-text: #8a6a2a;
+    color-scheme: light;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 16px/1.55 var(--body);
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+h1, h2, h3, h4, .disp { font-family: var(--display); letter-spacing: -.01em; line-height: 1.08; font-weight: 800; }
+h1 em, h2 em { font-style: italic; color: var(--accent); }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+section { padding: 84px 0; }
+.kicker { display: inline-flex; align-items: center; gap: 10px; font: 500 12.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.kicker::before { content: ''; width: 22px; height: 6px; background: var(--zebra); border-radius: 1px; }
+h2 { font-size: clamp(26px, 3.1vw, 40px); max-width: 820px; }
+.sub { color: var(--muted); font-size: 17px; max-width: 680px; margin-top: 14px; }
+
+/* Жёлто-чёрная «зебра» — тонкий разделитель, не чаще пары раз на странице */
+.zebra { height: 6px; background: var(--zebra); opacity: .9; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; cursor: pointer; font: 700 15px var(--body);
+  padding: 14px 22px; border-radius: 12px; color: var(--on-signal); background: var(--signal);
+  box-shadow: 0 0 0 0 rgb(var(--signal-rgb) / 0), 0 10px 26px -12px rgb(var(--signal-rgb) / .7);
+  transition: transform .15s, box-shadow .15s, background .15s;
+}
+.btn:hover { transform: translateY(-2px); background: color-mix(in srgb, var(--signal) 85%, #fff); }
+.btn:disabled { opacity: .7; cursor: default; transform: none; }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--stroke-2); box-shadow: none; }
+.btn.ghost:hover { border-color: var(--accent); }
+
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 28px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-2); padding: 8px 13px; border-radius: 10px; background: var(--glass); border: 1px solid var(--line); }
+.chip b { color: var(--accent); font-weight: 700; }
+
+.crumbs { display: flex; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 16px; flex-wrap: wrap; }
+.crumbs a:hover { color: var(--text); }
+
+/* Поля форм */
+.input {
+  width: 100%; padding: 15px 17px; border-radius: 12px;
+  border: 1px solid var(--stroke); background: var(--field-bg);
+  color: var(--text); font: 600 16px var(--body);
+}
+.input::placeholder { color: var(--placeholder); }
+.input:focus { outline: none; border-color: var(--signal); box-shadow: 0 0 0 3px rgb(var(--signal-rgb) / .2); }
+select.input { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+select.input option { background: var(--bg2); }
+
+/* Появление при прокрутке (класс .in ставит scripts/motion.ts) */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1); }
+.reveal.in { opacity: 1; transform: none; }
+.no-js .reveal { opacity: 1; transform: none; }
+
+@media (max-width: 980px) {
+  section { padding: 60px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}

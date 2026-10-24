@@ -1,0 +1,67 @@
+---
+// Шкала «какой вес под какую задачу»: 60 → 500 кг, по корню из веса — лёгкие классы не слипаются.
+import { TASK_PAGES } from '../data/pages';
+
+const pos = (w: number) => ((Math.sqrt(w) - Math.sqrt(50)) / (Math.sqrt(520) - Math.sqrt(50))) * 100;
+const marks = [
+  { w: 60, label: '60', depth: '20 см', price: '30' },
+  { w: 90, label: '90', depth: '30 см', price: '35' },
+  { w: 130, label: '120–140', depth: '35–38 см', price: '40' },
+  { w: 160, label: '160', depth: '40 см', price: '60' },
+  { w: 260, label: '260 ↔', depth: '50 см', price: '110' },
+  { w: 300, label: '300', depth: '50 см', price: '80' },
+  { w: 430, label: '430 ↔', depth: '50 см', price: '140' },
+  { w: 500, label: '500 ↔', depth: '80 см', price: '180' },
+];
+const bands = [
+  { from: 55, to: 100, title: 'Плитка, садовые дорожки', note: 'песок 5–15 см', href: `/${TASK_PAGES[0].slug}.html` },
+  { from: 90, to: 165, title: 'Отмостка, подушка под фундамент', note: 'ПГС, песок 15–30 см', href: `/${TASK_PAGES[1].slug}.html` },
+  { from: 120, to: 310, title: 'Площадка под авто, парковка', note: 'щебень 15–30 см', href: `/${TASK_PAGES[2].slug}.html` },
+  { from: 250, to: 515, title: 'Основание дороги, щебень слоями', note: 'щебень, грунт 25–60 см', href: `/${TASK_PAGES[3].slug}.html` },
+];
+---
+<section id="scale">
+  <div class="wrap">
+    <div class="kicker reveal">Вес ↔ задача</div>
+    <h2 class="reveal">Какой вес под какую работу</h2>
+    <p class="sub reveal">Тяжелее плита — глубже уплотняет, но и возить её сложнее. Берите по задаче, а не «на всякий случай». ↔ — реверсивная, ходит вперёд и назад.</p>
+    <div class="scroller reveal">
+      <div class="scale">
+        <div class="axis"><span class="u">кг</span></div>
+        {marks.map((m) => (
+          <div class="mark" style={`left:${pos(m.w)}%`}>
+            <b class="num">{m.label}</b>
+            <span class="d num">{m.depth}</span>
+          </div>
+        ))}
+        <div class="bands">
+          {bands.map((b, i) => (
+            <a class="band" href={b.href} style={`left:${pos(b.from)}%;width:${pos(b.to) - pos(b.from)}%;--i:${i / 3}`}>
+              <b>{b.title} →</b><span>{b.note}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+    <p class="hint reveal">Вибронога (вибротрамбовка) — отдельно: для траншей шириной от 30 см, приямков и засыпки вдоль стен, куда плита не встанет.</p>
+  </div>
+</section>
+
+<style>
+  .scroller { margin-top: 34px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
+  .scale { position: relative; min-width: 860px; height: 300px; }
+  .axis { position: absolute; left: 0; right: 0; top: 36px; height: 12px; border-radius: 6px; background: var(--density); }
+  .u { position: absolute; right: 0; top: -26px; font: 500 12px var(--mono); color: var(--muted); }
+  .mark { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .mark b { font-size: 17px; font-weight: 500; line-height: 1; height: 28px; white-space: nowrap; }
+  .mark::after { content: ''; order: 1; width: 2px; height: 26px; background: var(--text); margin-top: 1px; }
+  .mark .d { order: 2; margin-top: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .bands { position: absolute; left: 0; right: 0; top: 120px; height: 180px; }
+  .band { position: absolute; top: calc(var(--i) * 132px); display: flex; flex-direction: column; justify-content: center; height: 38px; padding: 0 12px; border-radius: 8px; overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--d2) 55%, transparent); background: color-mix(in srgb, var(--d1) calc(10% + var(--i) * 18%), transparent); transition: border-color .15s, background .15s; }
+  .band:hover { border-color: var(--signal); background: var(--accent-soft); }
+  .band b { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .band span { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+  .hint { margin-top: 18px; color: var(--muted); max-width: 760px; }
+  .hint::before { content: '↳ '; color: var(--accent); }
+</style>

@@ -1,0 +1,162 @@
+---
+import { MATERIALS, TASKS, type Material, type Task } from '../data/calc';
+
+interface Props { task?: Task; material?: Material; thickness?: number; area?: number; title?: string }
+const { task = 'tile', material = 'sand', thickness = 15, area = 40, title = 'Калькулятор: какой вес плиты взять' } = Astro.props;
+---
+<section id="calc">
+  <div class="wrap">
+    <div class="kicker reveal">Калькулятор</div>
+    <h2 class="reveal">{title}</h2>
+    <p class="sub reveal">Площадь, материал и толщина слоя — и сразу видно, какая плита справится, сколько проходов и сколько времени займёт. Это ориентир: точнее подскажет менеджер.</p>
+
+    <div class="calc dark-zone reveal" data-calc>
+      <form class="in" onsubmit="return false">
+        <fieldset>
+          <legend>Задача</legend>
+          <div class="seg seg5">
+            {Object.entries(TASKS).map(([k, v]) => (
+              <label><input type="radio" name="task" value={k} checked={k === task} /><span>{v}</span></label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Материал</legend>
+          <div class="seg">
+            {Object.entries(MATERIALS).map(([k, v]) => (
+              <label><input type="radio" name="material" value={k} checked={k === material} /><span>{v}</span></label>
+            ))}
+          </div>
+        </fieldset>
+        <div class="rng">
+          <label for="c-th">Толщина слоя</label>
+          <output class="num" data-out="thickness">{thickness} см</output>
+          <input id="c-th" type="range" name="thickness" min="5" max="80" step="1" value={thickness} />
+        </div>
+        <div class="rng">
+          <label for="c-area">Площадь</label>
+          <span class="area"><input class="num" id="c-area-n" type="number" name="areaN" min="1" max="20000" value={area} aria-label="Площадь, м²" /> м²</span>
+          <input id="c-area" type="range" name="area" min="5" max="1500" step="5" value={area} />
+        </div>
+      </form>
+
+      <div class="out" aria-live="polite">
+        <div class="res-top">
+          <div>
+            <small>Подойдёт</small>
+            <b class="w" data-r="title">—</b>
+            <span class="m" data-r="model"></span>
+          </div>
+          <div class="pr"><b class="num" data-r="price">—</b><small>руб. / сутки</small></div>
+        </div>
+        <div class="metrics">
+          <div><small>Слои</small><b class="num" data-r="layers">—</b></div>
+          <div><small>Проходов по слою</small><b class="num" data-r="passes">—</b></div>
+          <div><small>Работы</small><b class="num" data-r="hours">—</b></div>
+          <div><small>Аренда</small><b class="num" data-r="days">—</b></div>
+        </div>
+        <div class="cut" aria-hidden="true"><div class="cut-bar" data-r="cut"></div><div class="cut-l"><span>поверхность</span><span data-r="cutl"></span></div></div>
+        <p class="big" data-r="big" hidden>Объём большой: даже двумя машинами — дольше трёх суток. Комбинацию плит и график подберёт менеджер.</p>
+        <ul class="tips" data-r="tips"></ul>
+        <button class="btn" type="button" data-lead data-r="btn">Забронировать эту плиту</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { recommend, MATERIALS, TASKS, type Material, type Task } from '../data/calc';
+
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  if (root) {
+    const form = root.querySelector('form')!;
+    const r = (k: string) => root.querySelector<HTMLElement>(`[data-r="${k}"]`)!;
+    const num = (v: number) => String(v).replace('.', ',');
+    const range = form.elements.namedItem('area') as HTMLInputElement;
+    const areaN = form.elements.namedItem('areaN') as HTMLInputElement;
+    const th = form.elements.namedItem('thickness') as HTMLInputElement;
+    const pick = (name: string) => (form.querySelector<HTMLInputElement>(`input[name="${name}"]:checked`)!).value;
+    const plural = (n: number, a: string, b: string, c: string) => (n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? b : c);
+
+    const update = () => {
+      const task = pick('task') as Task, material = pick('material') as Material;
+      const area = Math.max(1, Number(areaN.value) || 1), thickness = Number(th.value);
+      const res = recommend({ area, material, thickness, task });
+      const m = res.machine;
+      root.querySelector<HTMLElement>('[data-out="thickness"]')!.textContent = `${thickness} см`;
+      const kind = task === 'trench' ? 'Вибротрамбовка' : m.reverse ? `Реверсивная ${m.weight} кг` : `Виброплита ${m.weight} кг`;
+      r('title').textContent = res.qty === 2 ? `${kind} × 2` : kind;
+      r('model').textContent = m.name;
+      const price = m.price[0] === m.price[1] ? `${m.price[0]}` : `${m.price[0]}–${m.price[1]}`;
+      r('price').textContent = res.qty === 2 ? `2 × ${price}` : price;
+      r('layers').textContent = res.layers > 1 ? `${res.layers} × ${res.layerCm} см` : `1 × ${res.layerCm} см`;
+      r('passes').textContent = `${res.passes[0]}–${res.passes[1]}`;
+      r('hours').textContent = `≈ ${num(res.hours)} ч`;
+      r('days').textContent = `${res.days} ${plural(res.days, 'сутки', 'суток', 'суток')}`;
+      r('big').hidden = !res.bigJob;
+      r('tips').innerHTML = res.tips.slice(0, 4).map((t) => `<li>${t}</li>`).join('');
+      // Разрез: слои отсыпки по цвету шкалы плотности
+      r('cut').innerHTML = Array.from({ length: res.layers }, (_, i) => `<span style="--i:${i / Math.max(1, res.layers - 1)}">${res.layerCm} см</span>`).join('');
+      r('cutl').textContent = `${thickness} см · ${MATERIALS[material]}`;
+      const btn = r('btn');
+      btn.dataset.model = `${kind}: ${m.name} — ${price} руб./сутки${res.qty === 2 ? ' × 2' : ''}`;
+      btn.dataset.task = task;
+      btn.dataset.calc = `${TASKS[task]}, ${MATERIALS[material]} ${thickness} см, ${area} м² → ${res.layers}×${res.layerCm} см, ${res.passes[0]}–${res.passes[1]} прох., ≈${num(res.hours)} ч, ${res.days} сут.`;
+    };
+    range.addEventListener('input', () => { areaN.value = range.value; update(); });
+    areaN.addEventListener('input', () => { range.value = areaN.value; update(); });
+    form.addEventListener('input', (e) => { if (e.target !== range && e.target !== areaN) update(); });
+    update();
+  }
+</script>
+
+<style>
+  .calc { margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 24px; overflow: hidden; border: 1px solid var(--stroke); background: var(--bg2); }
+  .in { padding: 30px; display: grid; gap: 22px; align-content: start; border-right: 1px solid var(--line); }
+  fieldset { border: 0; padding: 0; min-width: 0; }
+  legend, .rng label { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; padding: 0; }
+  .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .seg5 { grid-template-columns: repeat(3, 1fr); }
+  .seg label { position: relative; cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .seg span { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 44px; height: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--stroke); font-size: 14px; font-weight: 600; color: var(--text-2); transition: background .15s, color .15s, border-color .15s; }
+  .seg input:checked + span { background: var(--signal); color: var(--on-signal); border-color: var(--signal); }
+  .seg input:focus-visible + span { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .rng { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; }
+  .rng label { margin: 0; }
+  .rng output, .area { font-size: 20px; font-weight: 500; }
+  .area input { width: 92px; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--stroke); background: var(--field-bg); color: var(--text); font: 500 20px var(--mono); text-align: right; }
+  input[type='range'] { grid-column: 1 / -1; width: 100%; accent-color: var(--signal); height: 28px; }
+
+  .out { padding: 30px; display: flex; flex-direction: column; gap: 16px; background: linear-gradient(180deg, rgb(var(--signal-rgb) / .05), transparent 40%); }
+  .res-top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+  .res-top small { display: block; font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .w { display: block; font: italic 800 clamp(24px, 2.4vw, 32px)/1.1 var(--display); margin-top: 4px; color: var(--signal); }
+  .m { display: block; color: var(--text-2); font-size: 14px; margin-top: 4px; }
+  .pr { text-align: right; flex: none; }
+  .pr b { font-size: 30px; font-weight: 500; white-space: nowrap; }
+  .pr small { letter-spacing: 0; text-transform: none; font-family: var(--body); }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .metrics div { padding: 10px; border-radius: 10px; background: var(--glass); border: 1px solid var(--line); }
+  .metrics small { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.25; min-height: 2.5em; }
+  .metrics b { font-size: 16px; font-weight: 500; white-space: nowrap; }
+  .cut-bar { display: flex; flex-direction: column; gap: 3px; padding: 3px; border-radius: 10px; background: rgba(0, 0, 0, .35); }
+  .cut-bar :global(span) { display: block; padding: 4px 10px; border-radius: 6px; font: 500 12px var(--mono); color: #121314; background: color-mix(in srgb, var(--signal) calc(100% - var(--i) * 70%), var(--d0)); }
+  .cut-l { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .big { padding: 12px 14px; border-radius: 10px; border-left: 3px solid var(--signal); background: var(--accent-soft); font-weight: 600; font-size: 14px; }
+  .tips { list-style: none; padding: 0; display: grid; gap: 8px; font-size: 14px; color: var(--text-2); }
+  .tips :global(li) { position: relative; padding-left: 20px; }
+  .tips :global(li)::before { content: ''; position: absolute; left: 2px; top: .5em; width: 8px; height: 8px; background: var(--signal); transform: rotate(45deg); }
+  .out .btn { margin-top: auto; }
+  @media (max-width: 980px) {
+    .calc { grid-template-columns: 1fr; }
+    .in { border-right: 0; border-bottom: 1px solid var(--line); padding: 22px 18px; }
+    .out { padding: 22px 18px; }
+  }
+  @media (max-width: 560px) {
+    .seg { grid-template-columns: repeat(2, 1fr); }
+    .seg5 { grid-template-columns: repeat(2, 1fr); }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .metrics small { min-height: 0; }
+  }
+</style>

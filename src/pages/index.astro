@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Catalog from '../components/Catalog.astro';
+import Calculator from '../components/Calculator.astro';
+import WeightScale from '../components/WeightScale.astro';
+import Rammers from '../components/Rammers.astro';
+import Steps from '../components/Steps.astro';
+import Tips from '../components/Tips.astro';
+import Faq from '../components/Faq.astro';
+import LeadSection from '../components/LeadSection.astro';
+import { SITE } from '../data/site';
+import { FAQ_HOME } from '../data/faq';
+import { TASK_PAGES, CLASS_PAGES } from '../data/pages';
+
+const faqLd = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: FAQ_HOME.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<Base
+  title="Аренда виброплит в Минске — от 60 до 500 кг, от 20 руб./сутки | Виброплиты.by"
+  description={`Аренда виброплит в Минске: лёгкие 60–90 кг под плитку, 120–160 кг для отмостки и парковки, реверсивные 260–500 кг для щебня и дороги. Калькулятор веса, 3 пункта выдачи. ☎ ${SITE.phoneHuman}`}
+  jsonLd={[faqLd]}
+>
+  <Hero
+    badge="Виброплиты 60–500 кг · в наличии"
+    title="Аренда виброплит в Минске —"
+    hot="уплотним до 0,98"
+    lead="Лёгкие под тротуарную плитку, средние для отмостки и площадки под машину, реверсивные 260–500 кг для щебня и основания дороги. Подскажем вес под ваш слой и покажем, как работать."
+    chips={['от <b>20 руб.</b> / сутки', '9 весовых классов', '3 пункта выдачи', 'Вибронога для траншей']}
+  />
+  <Catalog />
+  <Calculator />
+  <WeightScale />
+  <Rammers />
+  <Steps />
+  <Tips />
+  <section class="fq">
+    <div class="wrap two">
+      <Faq items={FAQ_HOME} />
+      <aside class="links reveal">
+        <h3>По задачам</h3>
+        {TASK_PAGES.map((t) => <a href={`/${t.slug}.html`}>{t.title}<span>→</span></a>)}
+        <h3>По весу</h3>
+        {CLASS_PAGES.map((t) => <a href={`/${t.slug}.html`}>{t.title}<span>→</span></a>)}
+      </aside>
+    </div>
+  </section>
+  <LeadSection />
+</Base>
+
+<style>
+  .fq { padding-top: 20px; }
+  .two { display: grid; grid-template-columns: 1.5fr 1fr; gap: 56px; align-items: start; }
+  .links { position: sticky; top: 90px; padding: 24px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); }
+  .links h3 { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .links h3 + a { border-top: 0; }
+  .links a + h3 { margin-top: 22px; }
+  .links a { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line); font-weight: 600; }
+  .links a span { color: var(--accent); }
+  .links a:hover { color: var(--accent); }
+  @media (max-width: 980px) { .two { grid-template-columns: 1fr; gap: 32px; } .links { position: static; } }
+</style>

@@ -1,0 +1,14 @@
+---
+interface Props { size?: number }
+const { size = 19 } = Astro.props;
+---
+<span class="logo" style={`font-size:${size}px`}>
+  <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" style="fill:var(--signal)"/><path d="M6 23h20v3H6z" fill="#121314"/><path d="M9 14h11l3 6H8z" fill="#121314"/><path d="M19 14l5-7" stroke="#121314" stroke-width="2.4" stroke-linecap="round"/><path d="M4 28.5h3m3 0h3m3 0h3m3 0h3m3 0h2" stroke="#121314" stroke-width="1.6"/></svg>
+  <span>Вибро<b>плиты</b>.by</span>
+</span>
+
+<style>
+  .logo { display: inline-flex; align-items: center; gap: .5em; font: italic 800 1em var(--display); white-space: nowrap; }
+  svg { flex: none; width: 1.6em; height: 1.6em; }
+  b { color: var(--accent); font-weight: 800; }
+</style>

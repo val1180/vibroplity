@@ -1,0 +1,31 @@
+---
+import { SITE } from '../data/site';
+const steps = [
+  { t: 'Заявка или звонок', p: 'Расскажите, что трамбуете и какой толщины слой. Подскажем вес и проверим, есть ли плита в нужном пункте.' },
+  { t: 'Забираете или везём', p: `Три пункта выдачи в ${SITE.city}е. Лёгкую плиту увозят в багажнике универсала, от 120 кг нужен прицеп с трапом или доставка.` },
+  { t: 'Короткий инструктаж', p: 'Покажем, как завести, как держать ручку и куда не заходить плитой. Пять минут — и можно работать.' },
+  { t: 'Работаете и возвращаете', p: 'Минимальный срок — сутки. Не уложились — позвоните, продлим ещё на сутки.' },
+];
+---
+<section id="steps">
+  <div class="wrap">
+    <div class="kicker reveal">Как это работает</div>
+    <h2 class="reveal">Четыре шага от звонка до ровного основания</h2>
+    <ol class="steps">
+      {steps.map((s, i) => (
+        <li class="reveal"><span class="n num">0{i + 1}</span><b>{s.t}</b><p>{s.p}</p><i style={`--i:${i / 3}`}></i></li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .steps { list-style: none; padding: 0; margin-top: 34px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  li { position: relative; padding: 22px 20px 26px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); overflow: hidden; }
+  .n { display: block; font-size: 14px; color: var(--accent); margin-bottom: 12px; }
+  b { display: block; font: 800 19px var(--display); margin-bottom: 8px; }
+  p { color: var(--muted); font-size: 14.5px; }
+  i { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: color-mix(in srgb, var(--signal) calc(var(--i) * 100%), var(--d0)); }
+  @media (max-width: 980px) { .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+</style>

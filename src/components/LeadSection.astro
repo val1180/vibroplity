@@ -1,0 +1,45 @@
+---
+import LeadForm from './LeadForm.astro';
+import { SITE, telHref } from '../data/site';
+import type { Task } from '../data/calc';
+
+interface Props { task?: Task; title?: string }
+const { task, title = 'Забронируйте плиту — перезвоним и подскажем вес' } = Astro.props;
+---
+<section id="lead">
+  <div class="wrap">
+    <div class="box dark-zone reveal">
+      <div class="zebra top" aria-hidden="true"></div>
+      <div>
+        <div class="kicker">Заявка</div>
+        <h2>{title}</h2>
+        <p class="call">Или сразу: <a href={telHref}>{SITE.phoneHuman}</a> · <a href={SITE.telegram} target="_blank" rel="noopener">Telegram</a></p>
+        <p class="hours">Пункты выдачи · {SITE.hours}</p>
+        <ul class="points">
+          {SITE.points.map((p) => <li><i></i><span>{p.address}{p.metro && <span class="metro"> · {p.metro}</span>}</span></li>)}
+        </ul>
+      </div>
+      <LeadForm id={`leadForm${task ?? ''}`} source="Форма внизу страницы" task={task} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .box {
+    position: relative; border-radius: 26px; overflow: hidden; padding: 56px 52px 48px;
+    display: grid; grid-template-columns: 1.1fr .9fr; gap: 44px;
+    background: radial-gradient(ellipse at 0% 100%, rgba(176, 138, 90, .28), transparent 55%),
+      radial-gradient(ellipse at 100% 0%, rgb(var(--signal-rgb) / .12), transparent 50%), var(--bg2);
+    border: 1px solid var(--stroke);
+  }
+  .top { position: absolute; left: 0; right: 0; top: 0; }
+  h2 { font-size: clamp(26px, 3.2vw, 40px); }
+  .call { margin-top: 18px; color: var(--text-2); }
+  .call a { font-weight: 800; color: var(--text); text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: 4px; }
+  .hours { margin-top: 22px; color: var(--muted); font-size: 14px; }
+  .points { list-style: none; padding: 0; display: grid; gap: 10px; margin-top: 12px; color: var(--text-2); }
+  .points li { display: flex; gap: 12px; align-items: center; }
+  .points .metro { color: var(--muted); }
+  .points i { flex: none; width: 10px; height: 10px; background: var(--signal); transform: rotate(45deg); }
+  @media (max-width: 980px) { .box { grid-template-columns: 1fr; padding: 34px 22px 26px; gap: 26px; } }
+</style>

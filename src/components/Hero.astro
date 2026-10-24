@@ -1,0 +1,138 @@
+---
+interface Props {
+  badge: string;
+  title: string;
+  /** Часть заголовка курсивом и сигнальным жёлтым */
+  hot: string;
+  lead: string;
+  chips: string[];
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string };
+}
+const {
+  badge, title, hot, lead, chips,
+  primary = { label: 'Подобрать вес →', href: '/#calc' },
+  secondary = { label: 'Цены за сутки', href: '/#catalog' },
+} = Astro.props;
+---
+<section class="hero dark-zone" data-soil>
+  <div class="wrap hero-grid">
+    <div class="copy">
+      <div class="badge"><span class="dot"></span>{badge}</div>
+      <h1>{title} <em>{hot}</em></h1>
+      <p class="lead">{lead}</p>
+      <div class="cta">
+        <a class="btn" href={primary.href}>{primary.label}</a>
+        <a class="btn ghost" href={secondary.href}>{secondary.label}</a>
+      </div>
+      <div class="chips">{chips.map((c) => <span class="chip"><span set:html={c} /></span>)}</div>
+    </div>
+
+    <aside class="meter" aria-label="Плотномер: коэффициент уплотнения растёт с каждым проходом плиты">
+      <div class="m-top"><span>Плотномер</span><span class="live"><i></i>проход плиты</span></div>
+      <div class="gauge" aria-hidden="true">
+        <div class="dial">
+        <svg viewBox="0 0 200 126">
+          <defs>
+            <linearGradient id="gArc" x1="0" x2="1">
+              <stop offset="0" style="stop-color:var(--d0)" /><stop offset=".4" style="stop-color:var(--d1)" /><stop offset=".75" style="stop-color:var(--d2)" /><stop offset="1" style="stop-color:var(--d3)" />
+            </linearGradient>
+          </defs>
+          <path d="M24.8 117.4 A80 80 0 1 1 175.2 117.4" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="12" stroke-linecap="round" />
+          <path d="M24.8 117.4 A80 80 0 1 1 175.2 117.4" fill="none" stroke="url(#gArc)" stroke-width="5" stroke-linecap="round" />
+          {Array.from({ length: 11 }, (_, i) => {
+            const a = ((-110 + i * 22) * Math.PI) / 180;
+            const r1 = i % 5 === 0 ? 62 : 67;
+            return <line x1={100 + Math.sin(a) * r1} y1={90 - Math.cos(a) * r1} x2={100 + Math.sin(a) * 72} y2={90 - Math.cos(a) * 72} stroke="rgba(255,255,255,.35)" stroke-width={i % 5 === 0 ? 2 : 1} />;
+          })}
+          <text x="44" y="112" class="tl">0,80</text><text x="156" y="112" class="tl" text-anchor="end">1,00</text>
+        </svg>
+        <span class="needle" data-needle></span>
+        </div>
+        <div class="kval"><b class="num" data-k>0,80</b><small>коэф. уплотнения K</small></div>
+      </div>
+      <div class="m-row">
+        <div><small>Проходов</small><b class="num" data-pass>0</b></div>
+        <div><small>Слой</small><b>песок 20 см</b></div>
+        <div><small>Цель</small><b class="num">0,98</b></div>
+      </div>
+      <canvas class="seismo" aria-hidden="true"></canvas>
+      <div class="scale" aria-hidden="true"><span class="mark" data-mark></span></div>
+      <div class="scale-l" aria-hidden="true"><span>рыхлый</span><span>средний</span><span>плотный</span><span>уплотнён</span></div>
+    </aside>
+  </div>
+  <canvas class="soil" aria-hidden="true"></canvas>
+  <div class="probe" data-probe hidden></div>
+  <div class="zebra edge" aria-hidden="true"></div>
+</section>
+
+<script>
+  import '../scripts/soil';
+</script>
+
+<style>
+  .hero {
+    --ground: 128px;
+    position: relative; overflow: hidden; isolation: isolate; padding: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 85% 10%, rgb(var(--signal-rgb) / .09), transparent 60%),
+      linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, rgba(255, 255, 255, .025) 1px, transparent 1px) 0 0 / 32px 100%,
+      var(--bg);
+  }
+  .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.35fr .65fr; gap: 44px; align-items: center; padding: 36px 20px calc(var(--ground) + 66px); pointer-events: none; }
+  .hero-grid > * { pointer-events: auto; }
+  .badge { display: inline-flex; gap: 8px; align-items: center; font: 500 12.5px var(--mono); letter-spacing: .06em; padding: 7px 13px; border-radius: 8px; background: var(--glass-2); border: 1px solid var(--line); margin-bottom: 16px; color: var(--text-2); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  h1 { font-size: clamp(30px, 3.7vw, 52px); max-width: 720px; }
+  .lead { font-size: 17px; color: var(--text-2); max-width: 600px; margin: 16px 0 22px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+
+  .meter { justify-self: end; width: 100%; max-width: 340px; padding: 16px 16px 14px; border-radius: 20px; background: rgba(27, 29, 31, .78); border: 1px solid var(--stroke); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .8); }
+  .m-top { display: flex; justify-content: space-between; font: 500 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .live i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); margin-right: 6px; animation: pulse 1s infinite; }
+  .gauge { margin: 6px auto 0; max-width: 230px; }
+  .dial { position: relative; }
+  .gauge svg { width: 100%; height: auto; }
+  .tl { font: 500 10px var(--mono); fill: #9b978d; }
+  .needle { position: absolute; left: 50%; bottom: 28.57%; width: 3px; height: 50%; margin-left: -1.5px; background: var(--signal); border-radius: 3px; transform-origin: 50% 100%; transform: rotate(-110deg); transition: transform .25s ease-out; box-shadow: 0 0 10px rgb(var(--signal-rgb) / .6); }
+  .needle::after { content: ''; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--signal); }
+  .kval { text-align: center; margin-top: -4px; }
+  .kval b { display: block; font-size: 30px; font-weight: 500; color: var(--text); line-height: 1; }
+  .kval small { font-size: 11px; color: var(--muted); }
+  .m-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }
+  .m-row div { padding: 8px 9px; border-radius: 10px; background: var(--glass); border: 1px solid var(--line); }
+  .m-row small { display: block; font-size: 11px; color: var(--muted); }
+  .m-row b { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .seismo { display: block; width: 100%; height: 46px; margin-top: 10px; border-radius: 8px; background: rgba(0, 0, 0, .3); }
+  .scale { position: relative; height: 8px; border-radius: 4px; background: var(--density); margin-top: 12px; }
+  .mark { position: absolute; top: -4px; left: 0; width: 3px; height: 16px; margin-left: -1.5px; background: var(--text); border-radius: 2px; transition: left .3s; }
+  .scale-l { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  .soil { position: absolute; left: 0; bottom: 6px; width: 100%; height: calc(var(--ground) + 74px); z-index: 0; cursor: crosshair; touch-action: pan-y; }
+  .probe { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; padding: 7px 10px; border-radius: 9px; background: rgba(18, 19, 20, .92); border: 1px solid var(--signal); font: 500 12px/1.4 var(--mono); color: var(--text-2); white-space: nowrap; }
+  .probe :global(b) { display: block; color: var(--signal); font-weight: 500; }
+  .edge { position: absolute; left: 0; right: 0; bottom: 0; }
+
+  @media (max-width: 980px) {
+    .hero { --ground: 110px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 26px; padding: 28px 20px calc(var(--ground) + 60px); }
+    .meter { justify-self: start; max-width: 520px; display: grid; grid-template-columns: 150px 1fr; gap: 4px 14px; align-items: center; }
+    .m-top { grid-column: 1 / -1; }
+    .gauge { grid-row: span 3; margin: 0; }
+    .m-row { margin-top: 6px; }
+    .seismo { height: 36px; margin-top: 6px; }
+    .scale, .scale-l { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .lead { font-size: 16px; }
+    .cta .btn { flex: 1 1 auto; }
+    .chips .chip { font-size: 13px; padding: 7px 10px; }
+    .meter { grid-template-columns: 120px 1fr; padding: 12px; }
+    .m-row { grid-template-columns: 1fr 1fr; }
+    .m-row div:nth-child(3) { display: none; }
+    .kval b { font-size: 22px; }
+  }
+</style>
