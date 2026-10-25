@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { SITE, telHref } from '../data/site';
+import { SITE } from '../data/site';
 import { TASK_PAGES } from '../data/pages';
 
 const path = Astro.url.pathname.replace(/\.html$/, '');
@@ -13,10 +13,8 @@ const path = Astro.url.pathname.replace(/\.html$/, '');
       <a href="/#calc">Калькулятор</a>
       {TASK_PAGES.map((t) => <a class={path === `/${t.slug}` ? 'on' : ''} href={`/${t.slug}.html`}>{t.short}</a>)}
       <a class={path === '/kontakty' ? 'on' : ''} href="/kontakty.html">Контакты</a>
-      <a class="nav-phone" href={telHref}>{SITE.phoneHuman}</a>
     </nav>
     <div class="hd-right">
-      <a class="phone num" href={telHref}>{SITE.phoneHuman}</a>
       <button class="btn" type="button" data-lead>Забронировать</button>
       <button class="burger" type="button" aria-label="Меню" aria-controls="nav" aria-expanded="false"><span></span></button>
     </div>
@@ -45,9 +43,7 @@ const path = Astro.url.pathname.replace(/\.html$/, '');
   nav a { transition: color .15s; white-space: nowrap; }
   nav a:hover, nav a.on { color: var(--text); }
   nav .on { text-decoration: underline; text-decoration-color: var(--signal); text-underline-offset: 7px; text-decoration-thickness: 3px; }
-  .nav-phone { display: none; }
   .hd-right { margin-left: auto; display: flex; gap: 14px; align-items: center; }
-  .phone { font-weight: 500; font-size: 15px; white-space: nowrap; }
   .hd-right .btn { padding: 11px 18px; }
   .burger { display: none; width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: none; cursor: pointer; position: relative; }
   .burger span, .burger span::before, .burger span::after { position: absolute; left: 12px; width: 20px; height: 2px; background: var(--text); border-radius: 2px; transition: transform .2s; }
@@ -69,7 +65,5 @@ const path = Astro.url.pathname.replace(/\.html$/, '');
     }
     nav.open { transform: none; visibility: visible; }
     nav a { padding: 15px 0; border-bottom: 1px solid var(--line); }
-    .nav-phone { display: block; color: var(--accent); border: 0; }
   }
-  @media (max-width: 400px) { .phone { display: none; } }
 </style>

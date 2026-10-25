@@ -1,6 +1,6 @@
 ---
 import LeadForm from './LeadForm.astro';
-import { SITE, telHref } from '../data/site';
+import { SITE } from '../data/site';
 import type { Task } from '../data/calc';
 
 interface Props { task?: Task; title?: string }
@@ -13,7 +13,7 @@ const { task, title = 'Забронируйте плиту — перезвон�
       <div>
         <div class="kicker">Заявка</div>
         <h2>{title}</h2>
-        <p class="call">Или сразу: <a href={telHref}>{SITE.phoneHuman}</a> · <a href={SITE.telegram} target="_blank" rel="noopener">Telegram</a></p>
+        <p class="call">Или напишите в <a href={SITE.telegram} target="_blank" rel="noopener">Telegram</a></p>
         <p class="hours">Пункты выдачи · {SITE.hours}</p>
         <ul class="points">
           {SITE.points.map((p) => <li><i></i><span>{p.address}{p.metro && <span class="metro"> · {p.metro}</span>}</span></li>)}

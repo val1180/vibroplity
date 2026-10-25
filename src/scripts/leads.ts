@@ -105,7 +105,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form
       if (dlg) setTimeout(() => dlg.close(), 2200);
     } else {
       msg.className = 'msg err';
-      msg.textContent = 'Не отправилось. Позвоните нам или попробуйте ещё раз.';
+      msg.textContent = 'Не отправилось. Напишите нам в Telegram или попробуйте ещё раз.';
     }
   });
 });

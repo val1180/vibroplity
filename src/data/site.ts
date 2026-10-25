@@ -1,14 +1,13 @@
 // Контакты и реквизиты сайта — единственное место, где они заданы.
-// Телефон, Telegram, пункты выдачи и режим работы — общие для микросайтов Стройрента
+// Telegram, пункты выдачи и режим работы — общие для микросайтов Стройрента
 // (так же на trambovka.by, teplopushka.by, osushitel.by).
+// Телефона на сайте пока нет (владелец 25.10: «пока что убери телефон») — связь через заявку и Telegram.
 // TODO(владелец): завести ящик info@vibroplity.by или заменить на рабочий адрес.
 export const SITE = {
   code: 'vibroplity', // поле `site` в заявке CRM (config/leads.php → sites)
   name: 'Виброплиты.by',
   domain: 'vibroplity.by',
   url: 'https://vibroplity.by',
-  phone: '+375291898760',
-  phoneHuman: '+375 29 189-87-60',
   telegram: 'https://t.me/erbf11',
   email: 'info@vibroplity.by',
   city: 'Минск',
@@ -26,4 +25,3 @@ export const SITE = {
   analytics: { metrika: 0, ga: '' },
 } as const;
 
-export const telHref = `tel:${SITE.phone}`;

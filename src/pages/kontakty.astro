@@ -1,27 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { SITE, telHref } from '../data/site';
+import { SITE } from '../data/site';
 
 const map = (address: string) => `https://yandex.by/maps/?text=${encodeURIComponent(`Минск, ${address}`)}`;
 ---
 <Base
   title={`Контакты и пункты выдачи — аренда виброплит в Минске | ${SITE.name}`}
-  description={`Телефон ${SITE.phoneHuman}, Telegram и три пункта выдачи виброплит в Минске: ул. Автомобилистов, 12; ул. К. Либкнехта, 54; ул. Домбровская, 10. ${SITE.hours}.`}
+  description={`Заявка на сайте, Telegram и три пункта выдачи виброплит в Минске: ул. Автомобилистов, 12; ул. К. Либкнехта, 54; ул. Домбровская, 10. ${SITE.hours}.`}
   crumbs={[{ label: 'Главная', href: '/' }, { label: 'Контакты' }]}
 >
   <section class="top">
     <div class="wrap">
       <nav class="crumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span>/</span><span aria-current="page">Контакты</span></nav>
       <h1>Контакты</h1>
-      <p class="sub">Звоните или пишите в Telegram: подскажем вес плиты под ваш слой и проверим, в каком пункте она есть.</p>
+      <p class="sub">Оставьте заявку или напишите в Telegram: подскажем вес плиты под ваш слой и проверим, в каком пункте она есть.</p>
 
       <div class="grid">
-        <a class="card big" href={telHref}>
-          <span class="lbl">Телефон</span>
-          <b class="num">{SITE.phoneHuman}</b>
-          <span class="hint">Нажмите, чтобы позвонить</span>
-        </a>
+        <button class="card big" type="button" data-lead>
+          <span class="lbl">Заявка</span>
+          <b>Оставить заявку</b>
+          <span class="hint">Перезвоним в рабочее время</span>
+        </button>
         <a class="card" href={SITE.telegram} target="_blank" rel="noopener">
           <span class="lbl">Telegram</span><b>Написать</b><span class="hint">Ответим в рабочее время</span>
         </a>
@@ -41,7 +41,7 @@ const map = (address: string) => `https://yandex.by/maps/?text=${encodeURICompon
           </a>
         ))}
       </div>
-      <p class="note">Перед приездом позвоните: плиты 300–500 кг есть не в каждом пункте, подвезём к нужному. Тяжёлые плиты везут прицепом или нашей доставкой по Минску и области — стоимость назовёт менеджер.</p>
+      <p class="note">Перед приездом оставьте заявку или напишите в Telegram: плиты 300–500 кг есть не в каждом пункте, подвезём к нужному. Тяжёлые плиты везут прицепом или нашей доставкой по Минску и области — стоимость назовёт менеджер.</p>
     </div>
   </section>
 
@@ -64,11 +64,12 @@ const map = (address: string) => `https://yandex.by/maps/?text=${encodeURICompon
   .top { padding-top: 52px; }
   h1 { font-size: clamp(32px, 4.4vw, 52px); }
   .grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; margin: 40px 0 64px; }
+  button.card { font: inherit; color: inherit; text-align: left; cursor: pointer; }
   .card { display: flex; flex-direction: column; gap: 8px; padding: 26px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); transition: border-color .2s, transform .2s; }
   .card:hover { border-color: var(--signal); transform: translateY(-3px); }
   .lbl { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .card b { font: 800 20px var(--display); overflow-wrap: anywhere; }
-  .card.big b { font: 500 clamp(22px, 2.4vw, 30px) var(--mono); color: var(--accent); white-space: nowrap; overflow-wrap: normal; }
+  .card.big b { font: 800 clamp(22px, 2.4vw, 30px) var(--display); color: var(--accent); }
   .hint { color: var(--muted); font-size: 14px; }
   h2 { font-size: clamp(26px, 3vw, 38px); }
   .hours { margin-top: 10px; color: var(--muted); }
