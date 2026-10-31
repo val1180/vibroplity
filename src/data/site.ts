@@ -11,8 +11,8 @@ export const SITE = {
   telegram: 'https://t.me/erbf11',
   email: 'info@vibroplity.by',
   city: 'Минск',
-  hours: 'пн–сб 9:00–18:00 · вс — выходной',
-  openingHours: 'Mo-Sa 09:00-18:00', // schema.org
+  hours: 'пн–пт 9:00–18:00 · сб–вс — Домбровская, 10 (сб 9–18, вс 9–15)',
+  openingHours: ['Mo-Fr 08:30-18:00', 'Sa 09:00-18:00', 'Su 09:00-15:00'], // schema.org — все пункты вместе: в сб и вс работает Домбровская, 10 (CRM, 31.10)
   points: [
     { name: 'Северный берег', address: 'ул. Автомобилистов, 12', metro: '' },
     { name: 'Центр', address: 'ул. К. Либкнехта, 54', metro: 'ст.м. Ф. Богушевича' },
